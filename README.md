@@ -1,9 +1,7 @@
 # Machine Learning Based Estimation of Average Treatment Effects under Unconfoundedness
 This is the code repo for my PhD project "Machine Learning Based Estimation of Average Treatment Effects under Unconfoundedness". In this project, I analyze the estimation of causal effects using machine learning methods. A description of the project can be found either in the [interactive online appendix](https://eliasmoor.shinyapps.io/mlevaluation/) or in the [paper](https://emoor.github.io/projects/Doctoral_Thesis_EM.pdf#page=18). This repo contains both the data analysis files (Analysis folder) and the Shiny app used to illustrate the results (Shiny App folder).
 
-## Overview of code files
-
-### Analysis
+## Analysis
 
 ##### Main file
 
@@ -24,7 +22,7 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 - mle_options.R: loads the required libraries and functions
 - create_superPopulation_busso.R: generates a superpopulation according to Busso et al. (2014)
 
-### Shiny App
+## Shiny App
 
 ##### Main file
 
@@ -32,23 +30,24 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 
 ##### SERVER files
 
-- SERVER_analysisData.R: extracts the data required to create the analysis comparison mode
-- SERVER_betweenData.R: extracts the data required to create the between-estimator comparison
-- SERVER_filterData1.R: filters data and info according to selected user input or specified values
-- SERVER_filterData2.R: further filters data and info according to selected user input or specified values
 - SERVER_getData.R: loads the .RData data file corresponding to the selected datatype input
 - SERVER_getInfo.R: loads the .RData info file corresponding to the selected datatype input
+- SERVER_filterData1.R: filters data and info according to selected user input or specified values
+- SERVER_filterData2.R: further filters data and info according to selected user input or specified values
+- SERVER_withinData.R: extracts the data required to create the within-estimator comparison
+- SERVER_betweenData.R: extracts the data required to create the between-estimator comparison
+- SERVER_analysisData.R: extracts the data required to create the analysis comparison mode
 - SERVER_histData.R: extracts the data required to create the histogram of propensity scores
+- SERVER_makePlot.R: creates the graph for the user selected comparison mode
+- SERVER_makeTable.R: creates the table for the user selected comparison mode
+- SERVER_makefsTable.R: creates the first stage table displaying the correlations/RMSE of estimated and true propensity scores/conditional
 - SERVER_makeHist.R: creates the histogram of propensity scores
 - SERVER_makeInfoBottom.R: adds summary information on the selected specification
 - SERVER_makeInfoCaptionGraph.R: adds graph captions 
 - SERVER_makeInfoCaptionHist.R: adds the histogram caption
 - SERVER_makeInfoTitleGraph.R: adds information regarding the user selected comparison mode and misspecification scenario
 - SERVER_makeInfoTitleHist.R: adds title to histogram of propensity scores
-- SERVER_makePlot.R: creates the graph for the user selected comparison mode
-- SERVER_makeTable.R: creates the table for the user selected comparison mode
-- SERVER_makefsTable.R: creates the first stage table displaying the correlations/RMSE of estimated and true propensity scores/conditional outcome means
-- SERVER_withinData.R: extracts the data required to create the within-estimator comparison
+ outcome means
 
 ##### UI files
 
