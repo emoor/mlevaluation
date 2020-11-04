@@ -1,0 +1,27 @@
+---
+title: "RO"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+
+##### Motivation and Research Questions: 
+
+Estimation of average treatment effects under the assumption of unconfoundedness requires estimating the conditional outcome means (CO),  
+
+$$m_1(x) = E(Y_i|D_i=1, X_i = x) \: \text{ and } \: m_0(x) = E(Y_i|D_i=0, X_i = x) \: , $$
+
+the propensity score (PS), 
+
+$$ p(x) = P(D_i=1|X_i = x) \: , $$
+
+or both.
+
+In empirical applications, the conditional outcome means are often estimated with OLS and the propensity score with Logit. In this paper I consider estimating these functions with machine learning methods.
+
+**Research question 1**: Does estimating the propensity score and/or the conditional outcome means with machine learning methods increase accuracy of treatment effect estimation compared to OLS or logit based estimation (within-estimator comparison)? 
+
+**Research question 2**: Do hybrid methods estimate treatment effects more accurately than estimators that rely either only on the propensity score or only on the conditional outcome means (between-estimator comparison)?
+
+**Research question 3**: How does the accuracy of the estimators depend on changes in a) the degree of linearity and additivity in the relationships between treatment and covariates and between outcome and covariates, and b) the strength of selection into treatment? 
+

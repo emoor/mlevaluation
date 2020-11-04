@@ -1,0 +1,60 @@
+---
+title: "Data Diamond"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+
+##### Stylized Simulation Study
+The DGP of the first simulation study is based on the simulation design of Diamond and Sekhon (2013). In the default specification, a simulated dataset consists of 1000 observations with ten covariates, six of them are dummy variables and four continuous variables. The covariates are distributed as follows:
+
+$$ X_1 \sim Ber(0.5), X_3 \sim Ber(0.5), X_5 \sim Ber(0.5), X_6 \sim Ber(0.5), X_8 \sim Ber(0.5), X_9 \sim Ber(0.5)$$
+$$ X_2 \sim N(0,1), X_4 \sim N(0,1), X_7 \sim N(0,1), X_{10} \sim N(0,1) $$
+
+For the within-estimator comparison as well as for the between-estimator comparison, I consider a default scenario in which the relationships between treatment and covariates and between outcome and covariates are moderately nonlinear and nonadditive. The definition of nonlinearity and nonadditivity follows Diamond and Sekhon (2013). The nonlinearity and nonadditivity is introduced by adding quadratic terms and interaction terms. In the comparison mode "Analysis", I analyze changes in the data generating process. 
+
+The relationship between treatment and covariates includes seven main effects, three quadratic terms, and ten interaction terms. The specification is given by:
+
+$$ D^* = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \beta_4X_4 + \beta_5X_5 + \beta_6X_6 + \beta_7X_7 + $$ 
+
+$$ \beta_2X_2^2 + \beta_4X_4^2 + \beta_7X_7^2 + 
+0.5\beta_1X_1X_3 + 0.7\beta_2X_2X_4 + 0.5\beta_3X_3X_5 + $$
+
+$$ 0.7\beta_4X_4X_6 + 0.5\beta_5X_5X_7 +
+0.5\beta_1X_1X_6 + 0.7\beta_2X_2X_3 + 0.5\beta_3X_3X_4 + $$
+
+$$ 0.5\beta_4X_4X_5 + 0.5\beta_5X_5X_6 \: , $$
+
+with $\beta_0 = 0, \beta_1 = 0.8, \beta_2 = -0.25, \beta_3 = 0.6, \beta_4 = -0.4, \beta_5 = -0.8, \beta_6 = -0.5, \beta_7 = 0.7$.
+
+
+The observed treatment indicator $D$ is drawn from a Bernoulli distribution with probability equal to the propensity score:
+$$    D \sim Ber\bigg(\frac{1}{1 + exp(-D^*)}\bigg) \: ,
+$$
+where the propensity score is given by the logistic transformation on $D^*$.
+
+Similarly, the observed outcome is a function of the treatment indicator, seven main effects, three quadratic terms, ten interaction terms, and a noise term. The specification is given by:
+
+$$ Y =  \tau D + \alpha_0 + \alpha_1X_1 + \alpha_2X_2 + \alpha_3X_3 + \alpha_4X_4 + \alpha_8X_8 + \alpha_9X_9 + \alpha_{10}X_{10} + $$
+$$ \alpha_2X_2^2 + \alpha_4X_4^2 + \alpha_{10}X_{10}^2 + 0.5\alpha_1X_1X_3 + 0.7\alpha_2X_2X_4 + 0.5\alpha_3X_3X_4 + $$
+    
+  $$    0.7\alpha_4X_4X_8 + 0.5\alpha_8X_8X_{10} + 
+  0.5\alpha_1X_1X_{10} + 0.7\alpha_2X_2X_3 + 0.5\alpha_3X_3X_9 + $$
+  
+  $$ 0.5\alpha_4X_4X_{10} + 0.5\alpha_9X_9X_{10} + \epsilon \: ,
+$$
+with $\tau =-0.4$ being the constant treatment effect, $\alpha_0 = -3.85, \alpha_1 = 0.3, \alpha_2 = -0.36, \alpha_3 = -0.73, \alpha_4 = -0.2, \alpha_8 = 0.71, \alpha_9 =-0.19, \alpha_{10} = 0.26$, and $\epsilon$ being a noise term from a normal distribution with mean $0$ and variance $\sigma_\epsilon^2$. In an attempt to approximately balance the noise in the treatment and outcome specification, $\sigma_\epsilon^2$ is chosen such that the pseudo $R^2$ of the treatment indicator is approximately equal to the $R^2$ of the outcome specification (see PhD thesis for details). Since the treatment effect is constant, there is no difference between the ATE and the ATT. In the estimation, I use the treatment effect estimators for the ATE.
+
+##### Misspecification Scenarios
+
+In theory, the regression estimator is consistent if the conditional outcome means are correctly specified. Likewise, the propensity score methods are consistent if the propensity score is correctly specified. The hybrid estimators are consistent if either the conditional outcome means or the propensity score is correctly specified.
+
+In this simulation I depart from the situation in which the conditional outcome means and the propensity score are always correctly specified. I consider four scenarios. The scenarios differ in terms of misspecification of the conditional outcome means and the propensity score. As described above, the DGP is specified such that the *true* conditional outcome means are linear-regression-type functions, including the main effects of the covariates, quadratic terms, and interaction terms. Similarly, the *true* propensity score is a logit-type function, including the main effects of the covariates, quadratic terms, and interaction terms. Hence, a correctly specified conditional outcome mean is estimated with OLS on the *correct* set of variables. The *correct* set of variables includes the main effects, quadratic terms, and interaction terms that were used to generate the data. A correctly specified propensity score is estimated with logit on the *correct* set of variables. Misspecification is introduced by omitting the quadratic and interaction terms in the estimation, or by using machine learning methods instead of OLS and logit.
+
+In **misspecification scenario I**, both the propensity score and the conditional outcome means are correctly specified. This means that a) the propensity score $p(x)$ is estimated using logit on the *correct* set of variables, and b) the conditional outcome means $m_1(x)$ and $m_0(x)$ are estimated using OLS on the *correct* set of variables. As no machine learning based estimation is involved, this scenario is only of limited interest in this context, and the results are presented only in the Appendix.
+
+In **misspecification scenario II**, only the propensity score is correctly specified, and the conditional outcome means are misspecified. This means that the propensity score is estimated as in misspecification scenario I. The conditional outcome means are estimated using either a) OLS on the set of main variables, i.e. omitting the quadratic and interaction terms, or b) random forests and elastic net. For random forests, only the main variables are included. For elastic net, the set of main variables and all possible quadratic and two-way interaction terms are included. 
+
+In **misspecification scenario III**, only the conditional outcome means are correctly specified, and the propensity score is misspecified. This means that the conditional outcome means are estimated as in misspecification scenario I. The propensity score is estimated using either a) logit on the set of main variables, i.e. omitting the quadratic and interaction terms, or b) random forests and elastic net. For random forests, only the main variables are included. For elastic net, the set of main variables and all possible quadratic and two-way interaction terms are included. 
+
+In **misspecification scenario IV**, both the propensity score and the conditional outcome means functions are misspecified. The misspecified functions are estimated as in misspecification scenarios II and III.

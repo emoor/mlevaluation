@@ -1,0 +1,20 @@
+---
+title: "ShinyContent"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+
+##### Within-Study Comparison: LaLonde Data
+
+###### Within-Study Comparisons
+
+In an influential contribution, LaLonde (1986) introduced the concept of *within-study comparisons*, which consist of two steps. In the first step, an experimental dataset is used to estimate the causal effect of treatment. Since treatment is randomly assigned in the experiment, there are no confounders. Therefore, an unbiased estimate of the causal effect is given by the difference in the mean outcomes of the treatment and control group. In a second step, either the experimental control group or the experimental treatment group is replaced by a nonexperimental comparison group. This should mimic a situation in which no experiment is available and confounding is a problem. The idea is then to analyze whether non-experimental econometric estimators are able to recover the "true" causal effect from the experiment with the non-experimental data. LaLonde (1986) finds that results are sensitive to both econometric specification and subgroup used in analysis. In many cases, his non-experimental econometric estimators were not able to recover the "true" causal effect. 
+
+###### Data
+
+The analysis of LaLonde (1986) was based on the National Supported Work (NSW) Demonstration -  a US job training program for disadvantaged workers. The goal of the program was to give participants work experience and assistance in a protected environment. For an in-depth description, see LaLonde (1986). The four target groups were 1) women receiving *Aid to Families with Dependent Children* (AFDC), 2) former drug addicts, 3) former offenders, and 4) high school dropouts. The main criteria for eligibility were that the person was unemployed at the time of being selected for the job training and had not been employed for more than three months in the preceding six months. The eligible applicants were randomly assigned to either the treatment group (receiving job training) or the control group (receiving no job training). For both treatment and control group, data on earnings and other demographic variables was collected before and after the treatment. The outcome of interest was earnings in the post-training year, which was 1978 for men and 1979 for women. The observed covariates were age, education, pre-treatment earnings in 1974 and 1975, a categorical variable for ethnicity, and dummies for being married and high school dropouts. The job training program was voluntary, and only a small fraction of eligible people participated in the program. LaLonde (1986) created nonexperimental comparison groups from  Westat's Matched Current Population Survey - Social Security Administration File (CPS-SSA) and the Panel Study of Income Dynamics (PSID). The CPS-SSA and PSID are stratified random samples of the US population. 
+
+###### Implementation
+
+I follow the implementation applied in Heckman et al. (1997, 1998) and Smith and Todd (2005). These authors note that another way to evaluate whether non-experimental estimators are able to remove the selection bias is to compare the experimental control group with the non-experimental comparison groups. Therefore, the treatment indicator indicates whether the individual belongs to the experimental control group or the non-experimental comparison group. As both groups did not receive job training, the true causal effect is known to be zero. Thus, I first create a combined dataset consisting of the experimental control group and the PSID comparison group. I then follow Advani et al. (2019) and apply a resampling procedure. I draw 5000 bootstrap samples from the original dataset. For each sample I draw 260 treated and 2490 control observations with replacement. 

@@ -1,0 +1,39 @@
+---
+title: "ShinyContent"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+
+##### Empirical Simulation Study: LaLonde Data
+The DGP of this simulation study is based on the LaLonde (1986) dataset. The idea of the empirical simulation study is to base the DGP on characteristics of a real dataset. The procedure is to fit parametric distributions to a real dataset and subsequently generate a population from the fitted distributions. In the simulation, I repeatedly draw samples from the population. The objective is to estimate the ATT of a job training program on earnings.
+
+The population consists of 1 million observations with eight covariates, four of which are dummy variables and four continuous variables. In the simulation I repeatedly draw samples of 1000 observations. The population is generated in order to calculate the population ATT, i.e. the true causal effect of interest. The covariates are generated as follows:
+
+1) Draw four dummies for *married*, *no degree*, unemployed in the year 1974 (*u74*), and unemployed in the year 1975 (*u75*) from four Bernoulli distributions with probabilities equal to the sample means of *married*, *no degree*, *u74*, and *u75* in the LaLonde data. Each possible combination of these four dummies represents a *group*.
+
+2) For each of the 16 groups defined by the four dummies, draw the variables *age*, *education*, earnings in 1974 (*re74*, in 1000), and earnings in 1975 (*re75*, in 1000) from a group-specific multivariate normal distribution. The means and covariance matrix of the group-specific normal distribution are equal to the sample means and covariances of *age*, *education*, *re74*, and *re75* in the group-specific subset of the LaLonde data. The variables *re74* and *re75* are restricted to be in the interval defined by the group-specific minimum and maximum of *re74* and *re75* in the LaLonde data. Draws outside the minimum or maximum are set to the minimum or maximum. The variables *age* and *education* are rounded to integers.
+
+3) To model the relationship between treatment and the covariates, a logit model is fitted to the LaLonde data. I include the eight main variables as well as squared *re74*, squared *re75*, and interactions between *u74* and *u74*, and between *re74* and *re75* in the logit model. I refer to the coefficients of the fitted logit model as $\widehat{\beta}^{L}$. Then, the population relationship between treatment and the covariates is based on
+
+$$
+    D^* =  Z'\widehat{\beta}^{L} - u \: ,
+$$
+where $Z$ is the set of variables consisting of the main effects as well as the quadratic and interaction terms, and $u$ is a noise term from a logistic distribution with location 0 and scale 1.
+
+
+4) The observed treatment indicator $D$ is constructed as:
+$$    D = 1\{ D^* > 0 \} \: , $$
+where $1\{ \cdot \}$ is the indicator function.
+
+5) To model the relationship between the outcome and the covariates, two separate OLS regressions are fitted to the LaLonde data. The set of variables included in the OLS regressions are the same as for the logit model in step 3. The first OLS regression is fitted in the subsample of treated observations, and the coefficients are referred to as $\widehat{\gamma}^{L}_1$. The second OLS regression is fitted in the subsample of untreated observations, and the coefficients are referred to as $\widehat{\gamma}^{L}_0$.
+
+6) Calculate the potential outcomes $Y^1$ and $Y^0$ as
+$$    Y^1 = Z'\widehat{\gamma}^{L}_1 + \epsilon^1 \: , \: \text{and} $$
+   $$ Y^0 = Z'\widehat{\gamma}^{L}_0 + \epsilon^0 \: ,  $$
+where $Z$ is again the set of variables consisting of the main effects as well as the quadratic and interaction terms, and $\epsilon^1$ and $\epsilon^0$ are noise terms from two normal distributions with mean $0$ and variances $\sigma_{\epsilon_1}^2$ and $\sigma_{\epsilon_0}^2$. The variances $\sigma_{\epsilon_1}^2$ and $\sigma_{\epsilon_0}^2$ correspond to the means of the squared residuals from the two OLS regressions fitted to the LaLonde data.
+
+7) Finally, the observed outcome $Y$ is given by
+$$    Y = DY^1 + (1-D)Y^0 \:. $$
+
+Compared to the simulation based on Diamond and Sekhon (2013), this DGP does not impose a constant treatment effect. Since two OLS regressions are fitted in the treated and untreated subsample, this DGP allows for heterogeneity in treatment effects. 

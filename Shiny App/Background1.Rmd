@@ -1,0 +1,43 @@
+---
+title: "Description Estimators"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+##### Setting and Assumptions
+I consider the Rubin Causal Model (RCM) with an outcome $Y$ and a binary treatment $D$. Each individual $i$ is characterized by two potential outcomes. The potential outcome in the case of treatment is denoted by $Y^1_i$, the potential outcome in the case of no treatment is denoted by $Y^0_i$. Since we observe one of the two potential outcomes only, the individual treatment effect, defined as $\tau_i = Y^1_i - Y^0_i$, is never observed. In this project I am interested in the average treatment effect (ATE), defined as $$ \tau_{ATE} = E(Y^1_i-Y^0_i) \: ,$$ and the average treatment effect on the treated (ATT), defined as $$ \tau_{ATT} = E(Y^1_i-Y^0_i|D_i=1) \: .$$ In the following, I refer to the ATE and the ATT as treatment effects. In addition, each individual is characterized by a vector of covariates $X_i$.
+
+In the setting I consider, identification of the ATE and ATT relies on the following assumptions: **unconfoundedness, overlap, stable unit treatment value assumption (SUTVA)**, and **no effect of treatment on covariates**. 
+    
+- The unconfoundedness assumption formally states that treatment is independent of potential outcomes, conditional on covariates $X_i = x$, i.e.
+
+$$    (Y^1_i, Y^0_i) \perp \!\!\! \perp   D_i \: |  \: X_i = x \: \text{ for all } x \text { in the support of } X_i. $$
+
+The assumption requires that all confounders - i.e. all variables affecting both treatment and outcome - are observed. The assumption implies that treatment is as good as randomly distributed conditional on $X_i=x$. The unconfoundedness assumption (or similar versions) is sometimes also called conditional independence assumption, selection on observables, or exogeneity.
+ 
+
+- The overlap assumption concerns the joint distribution of treatment and covariates. Formally, the assumption states that the conditional probability of treatment (propensity score) is strictly between zero and one, i.e.
+
+$$    0 < p(x) < 1 \text{ for all } x \text { in the support of } X_i $$
+
+where $p(x) = P(D_i=1|X_i=x)$ is the propensity score. The overlap assumption requires that, for all $x$ in the support of $X_i$, both treated and untreated observations are available.
+
+- Furthermore, the stable unit treatment value assumption (SUTVA) is assumed,
+
+$$    Y_i = Y_i^1D_i + Y_i^0(1-D_i) \: . $$
+
+The SUTVA states that the observed outcome of any individual $i$ depends only on the treatment status of individual $i$, but not on any other treatment status of individual $j \neq i$. Hence, spill-over and general equilibrium effects are assumed to be absent.
+
+- Lastly, it is assumed that there is no effect of treatment on covariates,
+
+$$    X_i^1 = X_i^0 = X_i  \: . $$
+
+Conditioning on covariates which are themselves affected by the treatment would either remove part of the total causal effect we are interested in, or introduce a collider bias, depending on the direction of the causal relationship between the covariate and the outcome.
+
+***
+
+#### Structure of the Estimation Procedure
+
+This section presents an overview of the estimation procedure. The figure below illustrates the different parts.
+
+

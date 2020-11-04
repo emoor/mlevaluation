@@ -1,0 +1,179 @@
+---
+title: "Description Estimators"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+
+As described above, I am interested in estimating the ATE or the ATT. Estimation of these treatment effects follows a two-step procedure. In the first step, the conditional outcome means and/or the propensity score are estimated. The conditional outcome means are defined as
+
+$$m_1(x) = E(Y_i|D_i=1, X_i = x) \: \text{ and } \: m_0(x) = E(Y_i|D_i=0, X_i = x) \: . $$
+
+The propensity score is defined as
+
+$$ p(x) = P(D_i=1|X_i = x) \: . $$
+
+
+In this project, I estimate these functions both with the conventional methods OLS (conditional outcome means) and logit (propensity score), as well as with the machine learning methods random forest and elastic net (see boxes at the top of the figure). These methods are described below. To answer the first research question, I investigate whether machine learning based estimation of treatment effects is more accurate than estimation based on conventional methods.
+
+In the second step, the fitted values of the conditional outcome means and/or the propensity score are plugged into the treatment effect estimators. I consider five different treatment effect estimators (see boxes at the bottom of the figure). These estimators can be classified into three categories. The *Regression* estimator in the first category uses only the conditional outcome means to estimate the treatment effects. The propensity score methods in the second category use only the propensity score to estimate the treatment effects. This category includes the *Inverse Probability Weighting (IPW)* and the *Matching on Propensity Score* estimators. The third category consists of hybrid estimators using both the conditional outcome means as well as the propensity score to estimate the treatment effects. This category includes the *Doubly Robust* and the *Bias-Corrected (BC) Matching on PS* estimators. The treatment effect estimators are also described below. To answer the second research question, I investigate whether hybrid methods estimate treatment effects more accurately than estimators that rely either only on the propensity score or only on the conditional outcome means.
+
+***
+
+#### Estimation Conditional Outcome Means and Propensity Score
+
+In this section I describe the methods used to estimate the conditional outcome means and the propensity score. The fitted values of these functions are plugged into the treatment effect estimators described below.
+
+##### Conventional Methods 
+
+The conventional based estimators use OLS to estimate the conditional outcome means and logit to estimate the propensity score. Ordinary least squares and logit are widely used methods in empirical economics. For reasons of space, I do not describe these methods here.
+
+##### Machine Learning Methods
+
+In this section I present the basics of random forests and elastic net.
+
+###### Random Forests
+
+A random forest is a collection of many regression or classification trees. A regression or classification tree is a recursive partitioning of the covariate space into exhaustive and mutually exclusive subgroups. In each subgroup of the partition, a simple model is fitted to obtain the predicted outcome for observations with covariates corresponding to this subgroup. Often, the simple model is just a constant, and the predicted outcome for observations with covariates corresponding to subgroup $k$ is given by the group average of observations in group $k$. 
+
+To obtain the recursive partitioning of the covariate space, the algorithm starts with the unpartitioned covariate space. Only binary splits are considered. For the first split, the algorithm aims to find a splitting variable $v$ and a splitting point $s$ which reduce a given loss function the most. For example, the regression tree algorithm used in this project minimizes
+
+$$    \min_{v,s} \bigg[  \sum_{x_i \in R_1(v,s)} (y_i - c_1)^2 + 
+    \sum_{x_i \in R_2(v,s)} (y_i - c_2)^2 \bigg] \: , $$
+    
+where $R_1(v,s) = \{ X | X_v \leq s \}$ and $R_2(v,s) = \{ X | X_v > s \}$ are the subgroups defined by the binary covariate split, $c_g = \frac{1}{n_g} \sum_{x_i \in R_g(v,s)} y_i$ for $g \in \{1,2\}$ is the average outcome in subgroup $R_g(v,s)$, and $n_g$ is the number of observations in subgroup $R_g(v,s)$.
+
+After each split, the algorithm continues to find a new splitting variable $v$ and a splitting point $s$ in the subgroups defined by the previous split. 
+
+The recursive partitioning is repeated until some stopping criterion is reached, for example if fewer than five observations were to end up in a subgroup. Due to the recursive partitioning, regression trees automatically model interactions between covariates.
+
+A random forest is a large collection of individual trees. Usually, the individual trees are grown deeply. This means that the recursive splitting is applied many times. The resulting individual tree has lower bias, but higher variance than a shallow tree with only a few splits. The final prediction is obtained by averaging the predictions of all individual trees. To decrease the variance of the random forest estimator, the individual trees are decorrelated. To decorrelate the individual trees, two forms of randomness are introduced in a random forest. First, for each new tree, a bootstrap sample is drawn from the original data, and only the bootstrap sample is used to grow the tree. Second, at each split, only a randomly drawn subset of the covariates is considered to split upon. The size of the randomly drawn subset is sometimes regarded as a tuning parameter.
+
+###### Elastic Net
+
+Elastic net is a penalized regression method. Penalized regression means that the objective function includes a penalty term on the coefficients. As a result, the estimated coefficients are shrunken towards zero, and some coefficients are directly set to zero (variable selection). To estimate the conditional outcome means, I use the linear regression version. In this case, the elastic net estimator is the solution to 
+
+$$  \min_{\beta_0, \beta } \frac{1}{2N} \sum_{i=1}^N (y_i - \beta_0 - x_{i}'\beta)^2 + \lambda \big[ (1-\alpha)||\beta||^2_2/2 + \alpha||\beta||_1 \big] \: . $$
+
+
+To estimate the propensity score, I use the logistic regression version. In this case, the elastic net estimator is the solution to 
+
+$$ \min_{\beta_0, \beta} - \bigg\{ \frac{1}{N} \sum_{i=1}^N  [y_i(\beta_0 + x_i' \beta) - \log(1 + \exp(\beta_0 + x_i' \beta)) ]\bigg\}  + \lambda \big[ (1-\alpha)||\beta||^2_2/2 + \alpha||\beta||_1 \big] \: , $$
+
+
+where the propensity score is modelled as $p(x) = \frac{1}{1+\exp[-(\beta_0 + x' \beta)]}$. The coefficients are estimated with penalized maximum likelihood.
+
+For $\alpha=1$, the estimator is called least absolute shrinkage and selection operator (Lasso) and penalizes the absolute values of the coefficients. For $\alpha=0$, the estimator is called ridge regression and penalizes the squared values of the coefficients. For $0<\alpha<1$, the estimator is called elastic net and employs a combination of Lasso and ridge penalization. Due to the Lasso penalization, some coefficients are set directly to zero. The strength of the penalization is determined by the penalty parameter $\lambda$. The larger $\lambda$, the stronger the penalization and the more the coefficients are shrunken towards zero. For $\lambda \to \infty$, all coefficients are set to zero. For $\lambda = 0$, the OLS solution occurs.
+
+Compared to OLS, elastic net allows for the bias-variance trade-off. Due to the penalization, elastic net is a biased estimator. The bias-variance trade-off is controlled by the penalty parameter $\lambda$. The larger $\lambda$, the higher the bias and the smaller the variance. The overall goal is to achieve a smaller (mean squared) prediction error because the variance is reduced more than the introduced (squared) bias. 
+
+
+***
+
+#### Estimation Treatment Effects (ATE/ATT)
+
+In this section I describe the five treatment effects estimators. All estimators described in this section use predicted values of the propensity score and/or the conditional outcome means. Throughout this section, I assume a random sample of $N$ observations of which $N_T$ are treated.
+
+##### Regression Estimator
+Regression estimators estimate the ATE as the difference in the predicted values of the conditional outcome means, averaged over the sample. Hence, the ATE is estimated as
+
+$$      \hat{\tau}_{ATE} = \frac{1}{N}\sum_{i=1}^N \Big[ \widehat{m_1}(X_i) - \widehat{m_0}(X_i) \Big] \:  . $$
+
+
+
+Similarly, the ATT is estimated as the difference between the observed outcomes of the treated and their predicted values of the conditional outcome mean fitted in the untreated sample. Hence, for the ATT, we do not need to estimate the conditional outcome mean fitted in the treated sample. The ATT is estimated as
+
+$$      \hat{\tau}_{ATT} = \frac{1}{N_T}\sum_{i=1}^{N} D_i \Big[ Y_i - \widehat{m_0}(X_i)  \Big] \: . $$
+
+##### Inverse Probability Weighting (IPW)
+
+Inverse probability weighting relies on reweighting the outcome such that treated individuals with a high propensity score receive a smaller weight than treated individuals with a low propensity score. Similarly, untreated individuals with a low propensity score receive a smaller weight than untreated individuals with a high propensity score. The idea of reweighting is again to make the treated and untreated groups comparable in terms of their covariate distributions.
+
+The ATE is estimated by the average difference in reweighted outcomes
+
+$$
+    \hat{\tau}_{ATE} =  \frac{1}{N}\sum_{i=1}^N \bigg[ \frac{D_i Y_i}{\widehat{p}(X_i)} - \frac{(1-D_i) Y_i}{1-\widehat{p}(X_i)} \bigg]  \: .
+$$
+Similarly, the ATT is estimated as 
+$$
+    \hat{\tau}_{ATT} =  \frac{1}{N}\sum_{i=1}^N \bigg[ \frac{D_i Y_i}{c} - \frac{(1-D_i) Y_i \widehat{p}(X_i)}{(1-\widehat{p}(X_i)) c} \bigg]  \: .
+$$
+
+where $c$ is the fraction of treated, i.e. $c= \frac{1}{N} \sum_{i=1}^ND_i$. A potential problem with IPW is that the weights can become very large when the estimated propensity scores are very close to zero or one. As a result, the variance of the estimator increases. For this reason, I apply a trimming rule (see PhD thesis for more details).
+
+##### Matching on Propensity Score
+
+The idea of matching on the propensity score is to estimate the missing potential outcome by averaging the outcomes of the nearest neighbors in the opposite treatment group. The nearest neighbors are the observations with the smallest absolute difference in the propensity score. In this project, I apply one-to-one nearest neighbor matching with replacement. One-to-one means that only one nearest neighbor is considered for each individual. Matching with replacement implies that a given observation can be matched to more than one observation of the opposite treatment group. 
+
+Let $\ell(i)$ denote the nearest neighbor of individual $i$ in the opposite treatment group. Formally, $\ell(i)$ equals integer $j \in \{1,\dots , N\}$, if $D_j \neq D_i$, and   
+
+$$   |\widehat{p}(X_j)-\widehat{p}(X_i)| = \operatorname*{min}_{k:D_k \neq D_i} |\widehat{p}(X_k)-\widehat{p}(X_i)| , $$ 
+
+where $\hat{p}(\cdot)$ is the estimated propensity score.
+
+The missing potential outcome of each observation is imputed by the outcome of the nearest neighbor. Then, the ATE is estimated as the average difference between the observed outcome and the estimated missing potential outcome,
+$$    \hat{\tau}_{ATE} = \frac{1}{N} \sum_{i=1}^N \big[ D_i(Y_i - Y_{\ell(i)}) + (1-D_i)(Y_{\ell(i)} - Y_i)  \big] \: . $$
+
+Similarly, the ATT is estimated as the average difference between the observed outcome and the estimated missing potential outcome among the treated, 
+
+$$    \hat{\tau}_{ATT} = \frac{1}{N_T} \sum_{i=1}^N D_i \big[  Y_i - Y_{\ell(i)} \big]  \: . $$
+
+
+##### Weighting and Regression (Doubly Robust)
+
+Doubly robust estimation combines weighting and regression. The estimator is consistent if either the conditional outcome means or the propensity score is correctly specified. 
+
+The ATE is estimated as
+$$    \hat{\tau}_{ATE} =  \frac{1}{N}\sum_{i=1}^N \bigg[ \widehat{m_1}(X_i) - \widehat{m_0}(X_i) + \frac{D_i (Y_i- \widehat{m_1}(X_i))}{\widehat{p}(X_i)} - \frac{(1-D_i) (Y_i - \widehat{m_0}(X_i))}{1-\widehat{p}(X_i)} \bigg]  \: .
+$$
+
+Similarly, the ATT is estimated as 
+$$    \hat{\tau}_{ATT} =  \frac{1}{N}\sum_{i=1}^N \bigg[ \frac{D_i (Y_i-\widehat{m_0}(X_i))}{c} - \frac{(1-D_i) (Y_i-\widehat{m_0}(X_i)) \widehat{p}(X_i)}{(1-\widehat{p}(X_i)) c} \bigg]  \: .
+$$
+where $c$ is the fraction of treated, i.e. $c= \frac{1}{N} \sum_{i=1}^ND_i$. 
+
+##### Matching and Regression (Bias-corrected Matching on PS)
+
+Bias-corrected matching combines matching and regression. The idea of bias-corrected matching is to adjust the imputed potential outcome by an estimate of the bias. The nearest neighbor is equivalently defined as in 'Matching on Propensity Score'. 
+
+With 1-NN Bias-corrected Matching with replacement, the ATE is estimated as
+
+$$      \hat{\tau}_{ATE} = \frac{1}{N} \sum_{i=1}^N \big[ D_i(Y_i - [Y_{\ell(i)} + \widehat{m_0}(X_i) - \widehat{m_0}(X_{\ell(i)})]) + (1-D_i)([Y_{\ell(i)} + \widehat{m_1}(X_i) - \widehat{m_1}(X_{\ell(i)})] - Y_i)  \big] \: . $$
+
+
+Similarly, the ATT is estimated as 
+
+$$      \hat{\tau}_{ATT} = \frac{1}{N_T} \sum_{i=1}^N D_i(Y_i - [Y_{\ell(i)} + \widehat{m_0}(X_i) - \widehat{m_0}(X_{\ell(i)}])  \: . $$
+
+where $N_T$ is the number of treated observations.
+
+***
+
+
+#### Performance Measures
+
+To measure the performance of the treatment effect estimators, I use primarily the root-mean-square error (RMSE). In addition, I consider the absolute bias ($|Bias|$) and the standard deviation (SD) of the estimators. These performance measures are related to each other in the following way
+$$    \text{RMSE} = \sqrt{\text{Bias}^2 + \text{SD}^2 }.
+$$
+Hence, the MSE (squared RMSE) can be decomposed into the squared bias and the variance of the estimator.  
+
+The RMSE of an estimator $e$ is defined as
+$$    \text{RMSE}_e = \sqrt{\frac{1}{R}\sum_{r=1}^R (\hat{\tau}_{e,r}-\tau)^2} \: ,
+$$
+
+where $R$ is the number of simulation replications, $\hat{\tau}_{e,r}$ is the estimated treatment effect of estimator $e$ in simulation replication $r$, and $\tau$ is the true treatment effect (ATE or ATT). The term accuracy of an estimator refers to the RMSE of an estimator.
+
+The absolute bias of an estimator $e$ is defined as 
+$$    |\text{Bias}|_e = \Big| \frac{1}{R}\sum_{r=1}^R (\hat{\tau}_{e,r}-\tau) \Big| \: .
+$$
+
+The standard deviation of an estimator $e$ is defined as 
+$$    \text{SD}_e = \sqrt{\frac{1}{R}\sum_{r=1}^R (\hat{\tau}_{e,r}-\overline{\hat{\tau}_{e}})^2} \: ,
+$$
+
+where $\overline{\hat{\tau}_{e}} = \frac{1}{R}\sum_{r=1}^R \hat{\tau}_{e,r}$ is the average of the estimated treatment effects.
+
+#### Software
+
+In this analysis, I use the software `R`. To fit the random forests, I use the `randomForest` package. For elastic net, I use the `glmnet` package. The treatment effect estimators based on matching employ the `Matching` package. The other treatment effect estimators are self-implemented.
+

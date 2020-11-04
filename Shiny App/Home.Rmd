@@ -1,0 +1,65 @@
+---
+title: "Home"
+author: "Elias Moor"
+date: "07 09 2020"
+output: html_document
+---
+
+##### Interactive Online Appendix to "Machine Learning Based Estimation of Average Treatment Effects under Unconfoundedness"
+Thank you very much for visiting the interactive online appendix! This Shiny app accompanies the first chapter of my [PhD thesis](https://emoor.github.io/projects/Doctoral_Thesis_EM.pdf#page=18). On this page you will find additional graphs and tables. The idea is to present the results of my analysis as transparent as possible. You have the possibility to change characteristics of the DGP or of the estimation procedure. The graphs and tables will update automatically. Please do not hesitate to contact me if you have any questions or suggestions for improvement. My e-mail address: emoor(at)ethz(dot)ch.
+
+***
+
+###### Description Tabs
+- Home: overview interactive online appendix
+- Objectives: motivation and research objectives
+- Graph: displays the graph for the specification selected in the grey box on the left
+- Table: displays the table for the specification selected in the grey box on the left
+- Data: describes the data (DGP for simulations)
+- Background: setting and assumptions, ML methods, ATE/ATT estimators, performance measures
+
+***
+
+###### Description Panel Left Side (grey box on the left)
+* General Settings: 
+    + Data type:
+        - Stylized Simulation Study 
+        - Empirical Simulation Study: LaLonde data
+        - Within-Study Comparison: LaLonde data
+    + Comparison mode: (see 'Objectives' tab)
+        - Within-Estimator: research question 1 
+        - Between-Estimator: research question 2
+        - Analysis: research question 3
+        
+***
+        
+* DGP Settings: (depending on the data type, see 'Data' tab or [PhD thesis](https://emoor.github.io/projects/Doctoral_Thesis_EM.pdf#page=18))
+    + Stylized Simulation Study 
+        - D~X relationship: specify the relationship between treatment and covariates
+        - Y~X relationship: specify the relationship between outcome and covariates
+    + Stylized Simulation Study and Empirical Simulation Study
+        - Number of observations
+        - Strength selection into treatment
+        - Noise in outcome specification
+    + Real Lalonde data
+        - Gender
+        - Subsample: Full Lalonde dataset, Dehejia/Wahba subsample, Smith/Todd subsample
+        - Experimental group: Control, Treatment
+        - Comparison group: NSW, PSID, CPS
+        
+***
+
+* Estimation Settings: (see 'Background' tab or [PhD thesis](https://emoor.github.io/projects/Doctoral_Thesis_EM.pdf#page=18))
+    + Estimators: select ATE/ATT estimators 
+    + PS and Cond. Outcome Misspecification (only Stylized Simulation Study): select misspecification scenario
+    + Tune parameters with Caret: select whether hyperparameters are tuned with Caret
+    + Estimate D~X as classification: select whether to treat propensity score estimation as classification problem 
+    + Cross-Fitting
+    + Repeated Sample-Splitting
+
+
+
+
+
+
+
