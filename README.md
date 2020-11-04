@@ -24,6 +24,8 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 
 ## Shiny App
 
+Link to Shiny app: [eliasmoor.shinyapps.io/mlevaluation/](https://eliasmoor.shinyapps.io/mlevaluation/)
+
 ##### Main file
 
 - app.R: main Shiny app file containing ui and server
@@ -40,14 +42,13 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 - SERVER_histData.R: extracts the data required to create the histogram of propensity scores
 - SERVER_makePlot.R: creates the graph for the user selected comparison mode
 - SERVER_makeTable.R: creates the table for the user selected comparison mode
-- SERVER_makefsTable.R: creates the first stage table displaying the correlations/RMSE of estimated and true propensity scores/conditional
+- SERVER_makefsTable.R: creates the first stage table displaying the correlations/RMSE of estimated and true propensity scores/conditional outcome means
 - SERVER_makeHist.R: creates the histogram of propensity scores
 - SERVER_makeInfoBottom.R: adds summary information on the selected specification
 - SERVER_makeInfoCaptionGraph.R: adds graph captions 
 - SERVER_makeInfoCaptionHist.R: adds the histogram caption
 - SERVER_makeInfoTitleGraph.R: adds information regarding the user selected comparison mode and misspecification scenario
 - SERVER_makeInfoTitleHist.R: adds title to histogram of propensity scores
- outcome means
 
 ##### UI files
 
@@ -63,7 +64,7 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 - Data_Sim_Lalonde.Rmd: description simulation study based on Busso et al. (2014)
 - Data_realNSW.Rmd: description within-study comparison based on LaLonde (1986)
 - Background1.Rmd: description of setting and assumptions
-- Background2.Rmd: description of structure of estimation procedure, estimation of conditional outcome means and propensity score, estimation treatment effects, performance measures, software
+- Background2.Rmd: description of structure of estimation procedure, estimation of propensity scores and conditional outcome means, estimation treatment effects, performance measures, and software
 
 ##### Supplementary files
 
