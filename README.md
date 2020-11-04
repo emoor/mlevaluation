@@ -51,19 +51,24 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 
 ##### UI files
 
+- UI_Side_General.R: defines the "General Settings" tab of the UI
 - UI_Side_DGP.R: defines the "DGP Settings" tab of the UI
 - UI_Side_Estimation.R: defines the "Estimation Settings" tab of the UI
-- UI_Side_General.R: defines the "General Settings" tab of the UI
 
 ##### R Markdown description files
 
-- Background1.Rmd: description of setting and assumptions
-- Background2.Rmd: description of structure of estimation procedure, estimation of conditional outcome means and propensity score, estimation treatment effects, performance measures, software
+- Home.Rmd: description app overview
+- RO.Rmd: description research objectives
 - Data_Diamond1.Rmd: description simulation study based on Diamond and Sekon (2013)
 - Data_Sim_Lalonde.Rmd: description simulation study based on Busso et al. (2014)
 - Data_realNSW.Rmd: description within-study comparison based on LaLonde (1986)
-- Home.Rmd: description app overview
-- RO.Rmd: description research objectives
+- Background1.Rmd: description of setting and assumptions
+- Background2.Rmd: description of structure of estimation procedure, estimation of conditional outcome means and propensity score, estimation treatment effects, performance measures, software
+
+##### Supplementary files
+
+- app_choices.R: stores some app choice options (to retrieve name for graphs)
+- f_getEstimatorNames.R: formats the estimator names for the output tables
 
 ##### Folders
 
@@ -71,8 +76,5 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 - Folder www: additional material (png figures)
 
 
-##### Supplementary files
 
-- app_choices.R: stores some app choice options (to retrieve name for graphs)
-- f_getEstimatorNames.R: formats the estimator names for the output tables
 
