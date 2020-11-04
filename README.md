@@ -24,7 +24,7 @@ This is the code repo for my PhD project "Machine Learning Based Estimation of A
 
 ## Shiny App
 
-Link to Shiny app: [eliasmoor.shinyapps.io/mlevaluation/](https://eliasmoor.shinyapps.io/mlevaluation/)
+Link to Shiny app: [eliasmoor.shinyapps.io/mlevaluation](https://eliasmoor.shinyapps.io/mlevaluation/)
 
 ##### Main file
 
